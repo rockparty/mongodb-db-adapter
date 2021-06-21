@@ -27,21 +27,7 @@ describe('GetOneFromMongodb', () => {
     }
   }
 
-  it('should return falsy', async () => {
-    const { sut, args, collectionName, payload } = makeSut()
-
-    const fromDb = await client()
-      .db()
-      .collection(collectionName)
-      .findOne(payload)
-
-    const response = await sut(args)
-
-    const result = !isTruthy(response) && !isTruthy(fromDb)
-    expectToBeTrue(result, { printIfNotTrue: response })
-  })
-
-  it('should return truthy', async () => {
+  it('should return one', async () => {
     const { sut, collectionName, payload, args } = makeSut()
 
     const { ops } = await client()

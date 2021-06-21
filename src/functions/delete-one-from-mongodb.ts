@@ -8,11 +8,11 @@ export function deleteOneFromMongodb(client: MongoClient): DeleteOneFn {
   ): Promise<boolean> {
     const { from: collectionName, by: key, matching: value, opts } = args
 
-    await client
+    const { ok } = await client
       .db()
       .collection(collectionName)
       .findOneAndDelete({ [key]: value }, opts)
 
-    return true
+    return ok === 1
   }
 }

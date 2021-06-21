@@ -5,6 +5,10 @@ import type {
   DeleteOneAdapter,
   GetAllAdapter,
   GetManyAdapter,
+  InsertOneByIdAdapter,
+  GetOneByIdAdapter,
+  UpdateOneByIdAdapter,
+  DeleteOneByIdAdapter,
 } from '@rockparty/db-adapter'
 import type {
   MongodbDeleteOneOptions,
@@ -19,6 +23,10 @@ import {
   deleteOneFromMongodb,
   getAllFromMongodb,
   getManyFromMongodb,
+  insertOneByIdInMongodb,
+  getOneByIdFromMongodb,
+  updateOneByIdInMongodb,
+  deleteOneByIdFromMongodb,
 } from './functions'
 import type { MongoClientOptions } from 'mongodb'
 import { MongoClient } from 'mongodb'
@@ -28,7 +36,11 @@ type MongodbDbAdapter = InsertOneAdapter<MongodbInsertOneOptions> &
   UpdateOneAdapter<MongodbUpdateOneOptions> &
   DeleteOneAdapter<MongodbDeleteOneOptions<unknown>> &
   GetAllAdapter &
-  GetManyAdapter
+  GetManyAdapter &
+  InsertOneByIdAdapter &
+  GetOneByIdAdapter &
+  UpdateOneByIdAdapter &
+  DeleteOneByIdAdapter
 
 export async function mongodbDbAdapter(opts: {
   uri: string
@@ -45,5 +57,9 @@ export async function mongodbDbAdapter(opts: {
     deleteOne: deleteOneFromMongodb(client),
     getAll: getAllFromMongodb(client),
     getMany: getManyFromMongodb(client),
+    insertOneById: insertOneByIdInMongodb(client),
+    getOneById: getOneByIdFromMongodb(client),
+    updateOneById: updateOneByIdInMongodb(client),
+    deleteOneById: deleteOneByIdFromMongodb(client),
   }
 }

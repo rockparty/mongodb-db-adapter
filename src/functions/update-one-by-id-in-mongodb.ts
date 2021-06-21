@@ -1,24 +1,21 @@
-import type { UpdateOneFn, UpdateOneFnArgs } from '@rockparty/db-adapter'
+import type {
+  UpdateOneByIdFn,
+  UpdateOneByIdFnArgs,
+} from '@rockparty/db-adapter'
 import type { MongodbUpdateOneOptions } from '@/protocols'
 import type { MongoClient } from 'mongodb'
 
-export function updateOneInMongodb(client: MongoClient): UpdateOneFn {
+export function updateOneByIdInMongodb(client: MongoClient): UpdateOneByIdFn {
   return async function <T, U>(
-    args: UpdateOneFnArgs<T, U, MongodbUpdateOneOptions>,
+    args: UpdateOneByIdFnArgs<T, U, MongodbUpdateOneOptions>,
   ): Promise<(T & U) | null> {
-    const {
-      from: collectionName,
-      by: key,
-      matching: value,
-      as: payload,
-      opts,
-    } = args
+    const { from: collectionName, id, as: payload, opts } = args
 
     const { ok, value: updated } = await client
       .db()
       .collection(collectionName)
       .findOneAndUpdate(
-        { [key]: value },
+        { _id: id },
         { $set: payload },
         {
           ...opts,

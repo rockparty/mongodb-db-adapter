@@ -1,16 +1,15 @@
-import { insertOneInMongodb } from '@/functions/insert-one-in-mongodb'
-import { equals, isTruthy, omit } from '@/utils'
+import { insertOneByIdInMongodb } from '@/functions/insert-one-by-id-in-mongodb'
+import { isTruthy } from '@/utils'
 import {
   expectToBeTrue,
   collectionName,
   payload,
-  key,
   value,
-  insertOneArgs,
+  insertOneByIdArgs,
 } from '@/__tests__/__helpers__'
 import { mongodbTestHelper } from '@/__tests__/__helpers__/adapter.test-helper'
 
-describe('InsertOneInMongodb', () => {
+describe('InsertOneByIdInMongodb', () => {
   const { doBeforeAll, doBeforeEach, doAfterAll, client } =
     mongodbTestHelper(collectionName)
 
@@ -22,29 +21,27 @@ describe('InsertOneInMongodb', () => {
 
   const makeSut = () => {
     return {
-      sut: insertOneInMongodb(client()),
+      sut: insertOneByIdInMongodb(client()),
       collectionName,
       payload,
-      key,
-      value,
-      args: insertOneArgs,
+      id: value,
+      args: insertOneByIdArgs,
     }
   }
 
   it('should insert one', async () => {
-    const { sut, collectionName, args } = makeSut()
+    const { sut, collectionName, args, id } = makeSut()
 
     const response = await sut(args)
 
     const fromDb = await client()
       .db()
       .collection(collectionName)
-      .findOne(response)
+      .findOne({ _id: id })
 
-    const result =
-      isTruthy(response) &&
-      isTruthy(fromDb) &&
-      equals(response, omit(fromDb, '_id'))
-    expectToBeTrue(result, { printIfNotTrue: response })
+    const result = isTruthy(response) && isTruthy(fromDb) && fromDb._id === id
+    expectToBeTrue(result, {
+      printIfNotTrue: { response, id, dbId: fromDb._id },
+    })
   })
 })

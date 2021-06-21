@@ -1,15 +1,15 @@
-import { deleteOneFromMongodb } from '@/functions/delete-one-from-mongodb'
+import { deleteOneByIdFromMongodb } from '@/functions/delete-one-by-id-from-mongodb'
 import { clone, isTruthy } from '@/utils'
 import {
   expectToBeTrue,
   collectionName,
   payload,
-  modified,
-  deleteOneArgs,
+  value,
+  deleteOneByIdArgs,
 } from '@/__tests__/__helpers__'
 import { mongodbTestHelper } from '@/__tests__/__helpers__/adapter.test-helper'
 
-describe('DeleteOneFromMongodb', () => {
+describe('DeleteOneByIdFromMongodb', () => {
   const { doBeforeAll, doBeforeEach, doAfterAll, client } =
     mongodbTestHelper(collectionName)
 
@@ -21,21 +21,21 @@ describe('DeleteOneFromMongodb', () => {
 
   const makeSut = () => {
     return {
-      sut: deleteOneFromMongodb(client()),
+      sut: deleteOneByIdFromMongodb(client()),
       collectionName,
       payload,
-      modified,
-      args: deleteOneArgs,
+      id: value,
+      args: deleteOneByIdArgs,
     }
   }
 
   it('should delete one', async () => {
-    const { sut, collectionName, args, payload } = makeSut()
+    const { sut, collectionName, args, payload, id } = makeSut()
 
     const { ops } = await client()
       .db()
       .collection(collectionName)
-      .insertOne(clone(payload))
+      .insertOne({ _id: id, ...clone(payload) })
     const inserted = ops[0]
 
     const response = await sut(args)
@@ -43,11 +43,17 @@ describe('DeleteOneFromMongodb', () => {
     const fromDb = await client()
       .db()
       .collection(collectionName)
-      .findOne(payload)
+      .findOne({ _id: id })
 
     const result = response === true && isTruthy(inserted) && !isTruthy(fromDb)
     expectToBeTrue(result, {
-      printIfNotTrue: { payload, inserted, response, fromDb },
+      printIfNotTrue: {
+        payload,
+        inserted,
+        response,
+        fromDb,
+        id,
+      },
     })
   })
 })

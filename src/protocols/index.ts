@@ -6,7 +6,7 @@ import type {
   FindOneAndDeleteOption,
 } from 'mongodb'
 
-export type MongodbObject<T> = T & { _id?: ObjectID }
+export type MongodbObject<T, TId = ObjectID> = T & { _id?: TId }
 
 export type MongodbInsertOneOptions = CollectionInsertOneOptions
 export type MongodbGetOneOptions<T> = FindOneOptions<T>

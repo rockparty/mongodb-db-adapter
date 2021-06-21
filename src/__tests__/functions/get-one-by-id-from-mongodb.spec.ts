@@ -1,15 +1,15 @@
-import { updateOneInMongodb } from '@/functions/update-one-in-mongodb'
+import { getOneByIdFromMongodb } from '@/functions/get-one-by-id-from-mongodb'
 import { clone, equals, isTruthy, omit } from '@/utils'
 import {
   expectToBeTrue,
   collectionName,
   payload,
-  modified,
-  updateOneArgs,
+  value,
+  getOneByIdArgs,
 } from '@/__tests__/__helpers__'
 import { mongodbTestHelper } from '@/__tests__/__helpers__/adapter.test-helper'
 
-describe('UpdateOneInMongodb', () => {
+describe('GetOneByIdFromMongodb', () => {
   const { doBeforeAll, doBeforeEach, doAfterAll, client } =
     mongodbTestHelper(collectionName)
 
@@ -21,36 +21,37 @@ describe('UpdateOneInMongodb', () => {
 
   const makeSut = () => {
     return {
-      sut: updateOneInMongodb(client()),
+      sut: getOneByIdFromMongodb(client()),
       collectionName,
       payload,
-      modified,
-      args: updateOneArgs,
+      id: value,
+      args: getOneByIdArgs,
     }
   }
 
-  it('should update one', async () => {
-    const { sut, collectionName, args, payload, modified } = makeSut()
+  it('should return one', async () => {
+    const { sut, collectionName, payload, id, args } = makeSut()
 
     const { ops } = await client()
       .db()
       .collection(collectionName)
-      .insertOne(clone(payload))
+      .insertOne({ _id: id, ...clone(payload) })
     const inserted = ops[0]
-
-    const response = await sut(args)
 
     const fromDb = await client()
       .db()
       .collection(collectionName)
-      .findOne(modified)
+      .findOne({ _id: id })
+
+    const response = await sut(args)
 
     const result =
       isTruthy(response) &&
       isTruthy(fromDb) &&
-      equals(response, omit(fromDb, '_id'))
+      equals(payload, omit(inserted, '_id')) &&
+      fromDb._id === id
     expectToBeTrue(result, {
-      printIfNotTrue: { payload, inserted, response, fromDb },
+      printIfNotTrue: { inserted, response, fromDb, id, dbId: fromDb._id },
     })
   })
 })

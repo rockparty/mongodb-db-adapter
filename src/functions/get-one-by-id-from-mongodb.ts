@@ -2,9 +2,15 @@ import type { GetOneByIdFn, GetOneByIdFnArgs } from '@rockparty/db-adapter'
 import type { MongodbGetOneOptions, MongodbObject } from '@/protocols'
 import type { MongoClient } from 'mongodb'
 
-export function getOneByIdFromMongodb(client: MongoClient): GetOneByIdFn {
-  return async function <T>(
-    args: GetOneByIdFnArgs<MongodbGetOneOptions<T>>,
+export function getOneByIdFromMongodb<
+  Base = any,
+  IdKey extends keyof Base & string = any,
+  Collection extends string = string,
+>(
+  client: MongoClient,
+): GetOneByIdFn<MongodbGetOneOptions<any>, Base, IdKey, Collection> {
+  return async function <T extends Base>(
+    args: GetOneByIdFnArgs<MongodbGetOneOptions<T>, T, IdKey, Collection>,
   ): Promise<T | null> {
     const { from: collectionName, id, opts } = args
 

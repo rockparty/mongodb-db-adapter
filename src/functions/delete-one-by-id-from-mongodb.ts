@@ -5,9 +5,15 @@ import type {
 import type { MongodbDeleteOneOptions } from '@/protocols'
 import type { MongoClient } from 'mongodb'
 
-export function deleteOneByIdFromMongodb(client: MongoClient): DeleteOneByIdFn {
-  return async function <T>(
-    args: DeleteOneByIdFnArgs<MongodbDeleteOneOptions<T>>,
+export function deleteOneByIdFromMongodb<
+  Base = any,
+  IdKey extends keyof Base & string = any,
+  Collection extends string = string,
+>(
+  client: MongoClient,
+): DeleteOneByIdFn<MongodbDeleteOneOptions<any>, Base, IdKey, Collection> {
+  return async function <T extends Base>(
+    args: DeleteOneByIdFnArgs<MongodbDeleteOneOptions<T>, T, IdKey, Collection>,
   ): Promise<boolean> {
     const { from: collectionName, id, opts } = args
 

@@ -4,13 +4,17 @@ import type {
 } from '@rockparty/db-adapter'
 import type { MongodbInsertOneOptions, MongodbObject } from '@/protocols'
 import { clone } from '@/utils'
-import type { CollectionInsertOneOptions, MongoClient } from 'mongodb'
+import type { MongoClient } from 'mongodb'
 
-export function insertOneByIdInMongodb(
+export function insertOneByIdInMongodb<
+  Base = any,
+  IdKey extends keyof Base & string = any,
+  Collection extends string = string,
+>(
   client: MongoClient,
-): InsertOneByIdFn<CollectionInsertOneOptions> {
-  return async function <T>(
-    args: InsertOneByIdFnArgs<T, MongodbInsertOneOptions>,
+): InsertOneByIdFn<MongodbInsertOneOptions, Base, IdKey, Collection> {
+  return async function <T extends Base>(
+    args: InsertOneByIdFnArgs<MongodbInsertOneOptions, T, IdKey, Collection>,
   ): Promise<T> {
     const { in: collectionName, as: payload, idKey, opts } = args
 

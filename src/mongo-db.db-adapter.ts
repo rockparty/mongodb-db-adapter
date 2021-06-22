@@ -31,21 +31,29 @@ import {
 import type { MongoClientOptions } from 'mongodb'
 import { MongoClient } from 'mongodb'
 
-type MongodbDbAdapter = InsertOneAdapter<MongodbInsertOneOptions> &
-  GetOneAdapter<MongodbGetOneOptions<unknown>> &
-  UpdateOneAdapter<MongodbUpdateOneOptions> &
-  DeleteOneAdapter<MongodbDeleteOneOptions<unknown>> &
-  GetAllAdapter &
-  GetManyAdapter &
-  InsertOneByIdAdapter &
-  GetOneByIdAdapter &
-  UpdateOneByIdAdapter &
-  DeleteOneByIdAdapter
+type MongodbDbAdapter<
+  Base = any,
+  IdKey extends keyof Base & string = any,
+  Collection extends string = string,
+> = InsertOneAdapter<MongodbInsertOneOptions, Collection> &
+  GetOneAdapter<MongodbGetOneOptions<any>, Collection> &
+  UpdateOneAdapter<MongodbUpdateOneOptions, Collection> &
+  DeleteOneAdapter<MongodbDeleteOneOptions<any>, Collection> &
+  GetAllAdapter<undefined, Collection> &
+  GetManyAdapter<undefined, Collection> &
+  InsertOneByIdAdapter<undefined, Base, IdKey, Collection> &
+  GetOneByIdAdapter<undefined, Base, IdKey, Collection> &
+  UpdateOneByIdAdapter<undefined, Base, IdKey, Collection> &
+  DeleteOneByIdAdapter<undefined, Base, IdKey, Collection>
 
-export async function mongodbDbAdapter(opts: {
+export async function mongodbDbAdapter<
+  Base = any,
+  IdKey extends keyof Base & string = any,
+  Collection extends string = string,
+>(opts: {
   uri: string
   clientOpts?: MongoClientOptions
-}): Promise<MongodbDbAdapter> {
+}): Promise<MongodbDbAdapter<Base, IdKey, Collection>> {
   const { uri, clientOpts } = opts
 
   const client = await MongoClient.connect(uri, clientOpts)

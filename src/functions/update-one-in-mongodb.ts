@@ -2,10 +2,12 @@ import type { UpdateOneFn, UpdateOneFnArgs } from '@rockparty/db-adapter'
 import type { MongodbUpdateOneOptions } from '@/protocols'
 import type { MongoClient } from 'mongodb'
 
-export function updateOneInMongodb(client: MongoClient): UpdateOneFn {
-  return async function <T, U>(
-    args: UpdateOneFnArgs<T, U, MongodbUpdateOneOptions>,
-  ): Promise<(T & U) | null> {
+export function updateOneInMongodb<Collection extends string = string>(
+  client: MongoClient,
+): UpdateOneFn<MongodbUpdateOneOptions, Collection> {
+  return async function <T>(
+    args: UpdateOneFnArgs<MongodbUpdateOneOptions, T, Collection>,
+  ): Promise<T | null> {
     const {
       from: collectionName,
       by: key,

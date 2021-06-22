@@ -2,9 +2,11 @@ import type { DeleteOneFn, DeleteOneFnArgs } from '@rockparty/db-adapter'
 import type { MongodbDeleteOneOptions } from '@/protocols'
 import type { MongoClient } from 'mongodb'
 
-export function deleteOneFromMongodb(client: MongoClient): DeleteOneFn {
+export function deleteOneFromMongodb<Collection extends string = string>(
+  client: MongoClient,
+): DeleteOneFn<MongodbDeleteOneOptions<any>, Collection> {
   return async function <T>(
-    args: DeleteOneFnArgs<T, MongodbDeleteOneOptions<T>>,
+    args: DeleteOneFnArgs<MongodbDeleteOneOptions<T>, T, Collection>,
   ): Promise<boolean> {
     const { from: collectionName, by: key, matching: value, opts } = args
 

@@ -1,13 +1,13 @@
 import type { InsertOneFn, InsertOneFnArgs } from '@rockparty/db-adapter'
 import type { MongodbInsertOneOptions } from '@/protocols'
 import { clone } from '@/utils'
-import type { CollectionInsertOneOptions, MongoClient } from 'mongodb'
+import type { MongoClient } from 'mongodb'
 
-export function insertOneInMongodb(
+export function insertOneInMongodb<Collection extends string = string>(
   client: MongoClient,
-): InsertOneFn<CollectionInsertOneOptions> {
+): InsertOneFn<MongodbInsertOneOptions, Collection> {
   return async function <T>(
-    args: InsertOneFnArgs<T, MongodbInsertOneOptions>,
+    args: InsertOneFnArgs<MongodbInsertOneOptions, T, Collection>,
   ): Promise<T> {
     const { in: collectionName, as: payload, opts } = args
 

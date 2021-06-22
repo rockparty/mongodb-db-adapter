@@ -5,10 +5,16 @@ import type {
 import type { MongodbUpdateOneOptions } from '@/protocols'
 import type { MongoClient } from 'mongodb'
 
-export function updateOneByIdInMongodb(client: MongoClient): UpdateOneByIdFn {
-  return async function <T, U>(
-    args: UpdateOneByIdFnArgs<T, U, MongodbUpdateOneOptions>,
-  ): Promise<(T & U) | null> {
+export function updateOneByIdInMongodb<
+  Base = any,
+  IdKey extends keyof Base & string = any,
+  Collection extends string = string,
+>(
+  client: MongoClient,
+): UpdateOneByIdFn<MongodbUpdateOneOptions, Base, IdKey, Collection> {
+  return async function <T extends Base>(
+    args: UpdateOneByIdFnArgs<MongodbUpdateOneOptions, T, IdKey, Collection>,
+  ): Promise<T | null> {
     const { from: collectionName, id, as: payload, opts } = args
 
     const { ok, value: updated } = await client

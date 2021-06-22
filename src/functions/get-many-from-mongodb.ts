@@ -1,5 +1,4 @@
 import type { GetManyFn, GetManyFnArgs } from '@rockparty/db-adapter'
-import type { MongodbObject } from '@/protocols'
 import type { MongoClient } from 'mongodb'
 
 export function getManyFromMongodb(client: MongoClient): GetManyFn {
@@ -9,14 +8,9 @@ export function getManyFromMongodb(client: MongoClient): GetManyFn {
     const founded = await client
       .db()
       .collection(collectionName)
-      .find({ [key]: value })
+      .find({ [key]: value }, { projection: { _id: 0 } })
       .toArray()
 
-    const mapped = (founded as MongodbObject<T>[]).map((o) => {
-      delete o._id
-      return o
-    })
-
-    return mapped
+    return founded
   }
 }

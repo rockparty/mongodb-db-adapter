@@ -1,4 +1,5 @@
 import { getOneFromMongodb } from '@/functions/get-one-from-mongodb'
+import { MongodbObject } from '@/protocols'
 import { clone, equals, isTruthy, omit } from '@/utils'
 import {
   expectToBeTrue,
@@ -45,6 +46,7 @@ describe('GetOneFromMongodb', () => {
 
     const result =
       isTruthy(response) &&
+      !isTruthy((response as MongodbObject<unknown>)._id) &&
       isTruthy(fromDb) &&
       equals(payload, omit(inserted, '_id'))
     expectToBeTrue(result, { printIfNotTrue: { inserted, response, fromDb } })

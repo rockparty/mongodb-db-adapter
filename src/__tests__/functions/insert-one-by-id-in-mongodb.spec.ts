@@ -1,4 +1,5 @@
 import { insertOneByIdInMongodb } from '@/functions/insert-one-by-id-in-mongodb'
+import { MongodbObject } from '@/protocols'
 import { isTruthy } from '@/utils'
 import {
   expectToBeTrue,
@@ -39,7 +40,11 @@ describe('InsertOneByIdInMongodb', () => {
       .collection(collectionName)
       .findOne({ _id: id })
 
-    const result = isTruthy(response) && isTruthy(fromDb) && fromDb._id === id
+    const result =
+      isTruthy(response) &&
+      !isTruthy((response as MongodbObject<unknown>)._id) &&
+      isTruthy(fromDb) &&
+      fromDb._id === id
     expectToBeTrue(result, {
       printIfNotTrue: { response, id, dbId: fromDb._id },
     })

@@ -1,4 +1,5 @@
 import { getOneByIdFromMongodb } from '@/functions/get-one-by-id-from-mongodb'
+import { MongodbObject } from '@/protocols'
 import { clone, equals, isTruthy, omit } from '@/utils'
 import {
   expectToBeTrue,
@@ -47,6 +48,7 @@ describe('GetOneByIdFromMongodb', () => {
 
     const result =
       isTruthy(response) &&
+      !isTruthy((response as MongodbObject<unknown>)._id) &&
       isTruthy(fromDb) &&
       equals(payload, omit(inserted, '_id')) &&
       fromDb._id === id

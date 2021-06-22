@@ -9,14 +9,9 @@ export function getAllFromMongodb(client: MongoClient): GetAllFn {
     const founded = await client
       .db()
       .collection<MongodbObject<T>>(collectionName)
-      .find()
+      .find({}, { projection: { _id: 0 } })
       .toArray()
 
-    const mapped = founded.map((o) => {
-      delete o._id
-      return o
-    })
-
-    return mapped
+    return founded
   }
 }

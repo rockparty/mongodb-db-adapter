@@ -1,4 +1,5 @@
 import { updateOneByIdInMongodb } from '@/functions/update-one-by-id-in-mongodb'
+import { MongodbObject } from '@/protocols'
 import { clone, equals, isTruthy, omit } from '@/utils'
 import {
   expectToBeTrue,
@@ -47,6 +48,7 @@ describe('UpdateOneByIdInMongodb', () => {
 
     const result =
       isTruthy(response) &&
+      !isTruthy((response as MongodbObject<unknown>)._id) &&
       isTruthy(fromDb) &&
       equals(response, omit(fromDb, '_id')) &&
       fromDb._id === id

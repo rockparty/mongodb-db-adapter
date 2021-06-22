@@ -1,4 +1,5 @@
 import { getAllFromMongodb } from '@/functions/get-all-from-mongodb'
+import { MongodbObject } from '@/protocols'
 import { clone, isTruthy } from '@/utils'
 import {
   expectToBeTrue,
@@ -45,7 +46,10 @@ describe('GetAllFromMongodb', () => {
     const response = await sut(args)
 
     const result =
-      isTruthy(inserted) && response.length === 1 && fromDb.length === 1
+      isTruthy(inserted) &&
+      response.length === 1 &&
+      !isTruthy((response[0] as MongodbObject<unknown>)._id) &&
+      fromDb.length === 1
     expectToBeTrue(result, { printIfNotTrue: { inserted, response, fromDb } })
   })
 })

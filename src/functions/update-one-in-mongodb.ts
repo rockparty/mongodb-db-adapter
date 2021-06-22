@@ -23,12 +23,11 @@ export function updateOneInMongodb(client: MongoClient): UpdateOneFn {
         {
           ...opts,
           returnDocument: 'after',
+          projection: { _id: 0 },
         },
       )
 
     if (ok !== 1) return null
-
-    delete updated?._id
 
     return updated
   }

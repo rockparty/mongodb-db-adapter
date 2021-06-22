@@ -11,8 +11,13 @@ export function getOneByIdFromMongodb(client: MongoClient): GetOneByIdFn {
     const founded = await client
       .db()
       .collection(collectionName)
-      .findOne<MongodbObject<T>>({ _id: id }, opts)
-    delete founded?._id
+      .findOne<MongodbObject<T>>(
+        { _id: id },
+        {
+          ...opts,
+          projection: { _id: 0 },
+        },
+      )
 
     return founded
   }

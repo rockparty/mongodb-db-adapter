@@ -1,4 +1,5 @@
 import { deleteOneFromMongodb } from '@/functions/delete-one-from-mongodb'
+import { MongodbObject } from '@/protocols'
 import { clone, isTruthy } from '@/utils'
 import {
   expectToBeTrue,
@@ -45,7 +46,11 @@ describe('DeleteOneFromMongodb', () => {
       .collection(collectionName)
       .findOne(payload)
 
-    const result = response === true && isTruthy(inserted) && !isTruthy(fromDb)
+    const result =
+      response === true &&
+      !isTruthy((response as MongodbObject<unknown>)._id) &&
+      isTruthy(inserted) &&
+      !isTruthy(fromDb)
     expectToBeTrue(result, {
       printIfNotTrue: { payload, inserted, response, fromDb },
     })
